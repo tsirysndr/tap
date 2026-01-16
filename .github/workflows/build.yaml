@@ -49,21 +49,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#tap-}"
-            OS_NAME=$(echo "${{ matrix.os }}" | cut -d'-' -f1)
-            if [ "$OS_NAME" = "ubuntu" ]; then
-              if [[ "${{ matrix.os }}" == *"arm"* ]]; then
-                ARCH="arm64"
-              else
-                ARCH="amd64"
-              fi
-              PLATFORM="linux-${ARCH}"
-            else
-              ARCH="arm64"
-              PLATFORM="darwin-${ARCH}"
-            f
-            tap-${VERSION}-${PLATFORM}.tar.gz
-            tap-${VERSION}-${PLATFORM}.tar.gz.sha256
+            tap-*.tar.gz
+            tap-*.tar.gz.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
