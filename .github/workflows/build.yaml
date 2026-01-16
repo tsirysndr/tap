@@ -12,16 +12,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v6
-      - name: Build Tap Binary
+      - name: Clone Indigo
         run: |
           git clone https://github.com/bluesky-social/indigo.git
-          cd indigo && git checkout $TAG && go build -o tap ./cmd/tap
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: indigo/go.mod
+          check-latest: true
+      - name: Build Tap Binary
+        run: |
+          cd indigo && git switch $TAG && go build -o tap ./cmd/tap
         env:
           TAG: ${{ github.ref_name }}
       - name: Create Archive and Checksum
         run: |
           cd indigo
+          VERSION="${{ github.ref_name }}"
+          VERSION="${VERSION#tap-}"
           OS_NAME=$(echo "${{ matrix.os }}" | cut -d'-' -f1)
           if [ "$OS_NAME" = "ubuntu" ]; then
             if [[ "${{ matrix.os }}" == *"arm"* ]]; then
@@ -34,7 +41,7 @@ jobs:
             ARCH="arm64"
             PLATFORM="darwin-${ARCH}"
           fi
-          ARCHIVE_NAME="tap-${{ github.ref_name }}-${PLATFORM}.tar.gz"
+          ARCHIVE_NAME="tap-${VERSION}-${PLATFORM}.tar.gz"
           tar -czf "../${ARCHIVE_NAME}" tap
           cd ..
           sha256sum "${ARCHIVE_NAME}" > "${ARCHIVE_NAME}.sha256"
@@ -42,7 +49,21 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            tap-${{ github.ref_name }}-*.tar.gz
-            tap-${{ github.ref_name }}-*.tar.gz.sha256
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#tap-}"
+            OS_NAME=$(echo "${{ matrix.os }}" | cut -d'-' -f1)
+            if [ "$OS_NAME" = "ubuntu" ]; then
+              if [[ "${{ matrix.os }}" == *"arm"* ]]; then
+                ARCH="arm64"
+              else
+                ARCH="amd64"
+              fi
+              PLATFORM="linux-${ARCH}"
+            else
+              ARCH="arm64"
+              PLATFORM="darwin-${ARCH}"
+            f
+            tap-${VERSION}-${PLATFORM}.tar.gz
+            tap-${VERSION}-${PLATFORM}.tar.gz.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
