@@ -22,7 +22,7 @@ Tap is a utility that:
 
 ### Download Pre-built Binaries
 
-Download the latest release for your platform from the [Releases](https://github.com/tsirysandratraina/tap/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/tsirysndr/tap/releases) page.
 
 #### Linux (AMD64)
 ```bash
@@ -143,7 +143,7 @@ Binary releases follow the upstream indigo tap versioning. Check the [indigo rel
 ⚠️ **Note**: Tap is still in beta and may have bugs.
 
 - For tap-specific issues: [indigo issues](https://github.com/bluesky-social/indigo/issues)
-- For binary distribution issues: [this repository's issues](https://github.com/tsirysandratraina/tap/issues)
+- For binary distribution issues: [this repository's issues](https://github.com/tsirysndr/tap/issues)
 
 ## License
 
