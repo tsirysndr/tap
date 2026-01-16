@@ -21,7 +21,7 @@ jobs:
           check-latest: true
       - name: Build Tap Binary
         run: |
-          cd indigo && git switch $TAG && go build -o tap ./cmd/tap
+          cd indigo && git checkout $TAG && go build -o tap ./cmd/tap
         env:
           TAG: ${{ github.ref_name }}
       - name: Create Archive and Checksum
