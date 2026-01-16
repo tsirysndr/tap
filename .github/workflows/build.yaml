@@ -19,11 +19,30 @@ jobs:
           cd indigo && git checkout $TAG && go build -o tap ./cmd/tap
         env:
           TAG: ${{ github.ref_name }}
+      - name: Create Archive and Checksum
+        run: |
+          cd indigo
+          OS_NAME=$(echo "${{ matrix.os }}" | cut -d'-' -f1)
+          if [ "$OS_NAME" = "ubuntu" ]; then
+            if [[ "${{ matrix.os }}" == *"arm"* ]]; then
+              ARCH="arm64"
+            else
+              ARCH="amd64"
+            fi
+            PLATFORM="linux-${ARCH}"
+          else
+            ARCH="arm64"
+            PLATFORM="darwin-${ARCH}"
+          fi
+          ARCHIVE_NAME="tap-${{ github.ref_name }}-${PLATFORM}.tar.gz"
+          tar -czf "../${ARCHIVE_NAME}" tap
+          cd ..
+          sha256sum "${ARCHIVE_NAME}" > "${ARCHIVE_NAME}.sha256"
       - name: Upload artifact
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            linux-stable/vmlinux-${{ env.VERSION }}.${{ env.CPU_ARCH }}
-            linux-stable/vmlinux-${{ env.VERSION }}.${{ env.CPU_ARCH }}.sha256
+            tap-${{ github.ref_name }}-*.tar.gz
+            tap-${{ github.ref_name }}-*.tar.gz.sha256
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
